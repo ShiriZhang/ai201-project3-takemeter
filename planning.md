@@ -1,4 +1,5 @@
 # TakeMeter — Planning Document
+
 ## Project 3 · AI201 · r/soccer
 
 ---
@@ -18,32 +19,38 @@ expressing a stance, and that judgment affects how they engage with it.
 ## 2. Labels
 
 ### `factual`
+
 A post whose primary purpose is to share objective information — including statistics,
 match news, player quotes, or match clips — where the core content does not contain
 an evaluation or prediction about a person, team, or event made by the poster.
 
 **Example 1:**
+
 > "Norway's Erling Haaland is the first player to score twice on their World Cup debut
 > since Elijah Just for New Zealand on Monday, who was the first player to achieve the
 > feat since Yasin Ayari for Sweden on Sunday..."
 
 **Example 2:**
+
 > "Cristiano Ronaldo has gone 10 consecutive World Cup and European Championship
 > matches without scoring"
 
 ---
 
 ### `opinion`
+
 A post whose core content contains an evaluation or prediction about a player, team,
 match, or football topic — regardless of whether that evaluation comes from the poster
 themselves, a person being quoted, or a media article being shared.
 
 **Example 1:**
+
 > "The Athletic on Alexi Lalas: He is one of the most insufferable analysts in American
 > TV sports history. And while he was one of the best all-time U.S. defenders, his
 > credentials are paltry compared with those of Zlatan and Henry."
 
 **Example 2:**
+
 > "10 men and a statue: Portugal are sacrificing another World Cup for Cristiano
 > Ronaldo's ego"
 
@@ -54,6 +61,7 @@ themselves, a person being quoted, or a media article being shared.
 ### Edge Case 1: Statistics with an Implied Stance
 
 **Ambiguous post:**
+
 > "Cristiano Ronaldo has gone 10 consecutive World Cup and European Championship
 > matches without scoring"
 
@@ -69,6 +77,7 @@ The classifier reads text, not intent.
 ### Edge Case 2: Quote Posts
 
 **Ambiguous post:**
+
 > "Materazzi: Ibrahimovic is the greatest Inter fan in history for what he's doing
 > at Milan"
 
@@ -78,18 +87,19 @@ judgment.
 **Decision rule:** Assess whether the content of the quote is an independently
 verifiable objective fact.
 
-| Quote type | Example | Label |
-|-----------|---------|-------|
-| States an objective fact | "Canada Soccer: Koné has had successful surgery" | `factual` |
-| States a personal decision or intention | "Neuer: This is my last tournament" | `opinion` |
-| Evaluates a person | "Materazzi: Ibrahimovic is the greatest Inter fan" | `opinion` |
-| Makes a prediction | "Pochettino: Our players will be the great heroes" | `opinion` |
+| Quote type                              | Example                                            | Label     |
+| --------------------------------------- | -------------------------------------------------- | --------- |
+| States an objective fact                | "Canada Soccer: Koné has had successful surgery"   | `factual` |
+| States a personal decision or intention | "Neuer: This is my last tournament"                | `opinion` |
+| Evaluates a person                      | "Materazzi: Ibrahimovic is the greatest Inter fan" | `opinion` |
+| Makes a prediction                      | "Pochettino: Our players will be the great heroes" | `opinion` |
 
 ---
 
 ### Edge Case 3: Shared Media Articles
 
 **Ambiguous post:**
+
 > "The Athletic on Alexi Lalas: He is one of the most insufferable analysts..."
 
 The poster is only sharing a link; the judgment comes from the media outlet.
@@ -111,6 +121,7 @@ Data will be collected from r/soccer using Reddit's flair system as a filter:
 Target: **100 examples per label, 200 total.**
 
 If `opinion` examples fall short after browsing Hot and Top → This Week:
+
 1. Expand to Top → This Month and Top → This Year to source older posts
 2. If still insufficient, broaden the search to user-authored posts with explicitly
    evaluative language in the title (e.g., "X is the best/worst...",
@@ -143,12 +154,12 @@ confusion between the two classes.
 
 ## 6. Definition of Success
 
-| Metric | Target |
-|--------|--------|
-| Overall Accuracy | ≥ 85% |
-| `factual` F1 | ≥ 0.85 |
-| `opinion` F1 | ≥ 0.80 |
-| Minimum acceptable F1 for either class | 0.75 |
+| Metric                                 | Target |
+| -------------------------------------- | ------ |
+| Overall Accuracy                       | ≥ 85%  |
+| `factual` F1                           | ≥ 0.85 |
+| `opinion` F1                           | ≥ 0.80 |
+| Minimum acceptable F1 for either class | 0.75   |
 
 The zero-shot baseline (Groq `llama-3.3-70b-versatile`) is expected to correctly
 classify clear-cut `factual` and `opinion` posts, but to struggle on edge cases
@@ -164,6 +175,7 @@ checked for test set leakage or labels that are too easy to distinguish.
 ## 7. AI Tool Plan
 
 ### 7.1 Label Stress-Testing
+
 The label definitions and all three edge case decision rules will be provided to Claude,
 with a request to generate 10 posts that sit at the boundary between `factual` and
 `opinion`. If any generated post cannot be cleanly classified using the existing decision
@@ -171,6 +183,7 @@ rules, the definitions will be revised before annotation of the 200-example data
 begins.
 
 ### 7.2 Annotation Assistance
+
 Claude will be used to pre-label a batch of unlabeled posts, given the label definitions
 and decision rules as a prompt, with instructions to output one label per post.
 Pre-labeled results are treated as a draft only — every single example must be
@@ -180,6 +193,7 @@ marked in the CSV's `notes` column as `"pre-labeled by AI, human reviewed"` and
 disclosed in the README's AI Usage section.
 
 ### 7.3 Failure Analysis
+
 After training, the full list of misclassified test examples will be provided to Claude
 with a request to identify systematic error patterns — for example, quote posts being
 consistently mislabeled, or short posts being harder to classify. Claude's suggested
@@ -188,5 +202,5 @@ pattern is reported in the evaluation section of the README.
 
 ---
 
-*This document was written before any data collection began, in accordance with
-the Milestone 2 requirements of the TakeMeter project spec.*
+_This document was written before any data collection began, in accordance with
+the Milestone 2 requirements of the TakeMeter project spec._
